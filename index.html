@@ -308,16 +308,19 @@ function setDS(s) {
 // ─── DRIVE API ──────────────────────────────────
 async function getFolder(name, parentId) {
   const q = `name='${name}' and mimeType='application/vnd.google-apps.folder' and '${parentId}' in parents and trashed=false`;
-  const r = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id)`,
+  const r = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name)&spaces=drive`,
     { headers: { Authorization: `Bearer ${token}` } });
   const d = await r.json();
+  console.log(`Folder "${name}" in "${parentId}":`, d.files);
   if (d.files && d.files.length) return d.files[0].id;
   const c = await fetch('https://www.googleapis.com/drive/v3/files', {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder', parents: [parentId] })
   });
-  return (await c.json()).id;
+  const nf = await c.json();
+  console.log(`Created "${name}":`, nf.id);
+  return nf.id;
 }
 
 async function saveDrive() {
