@@ -229,25 +229,50 @@ async function saveDrive(){
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let rec=null,isRec=false,full='';
 if(SR){
-  rec=new SR();rec.lang='vi-VN';rec.continuous=true;rec.interimResults=true;
+  rec=new SR();
+  rec.lang='vi-VN';
+  rec.continuous=false;
+  rec.interimResults=false;
   rec.onresult=e=>{
-    let int='',fin='';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      const t=e.results[i][0].transcript;
-      if(e.results[i].isFinal)fin+=t+' ';else int+=t;
+    for(let i=0;i<e.results.length;i++){
+      if(e.results[i].isFinal){
+        full+=e.results[i][0].transcript+' ';
+      }
     }
-    full+=fin;
-    document.getElementById('tRaw').value=full+int;
+    document.getElementById('tRaw').value=full;
   };
-  rec.onerror=e=>{setStat('Lỗi: '+e.error,false);stopRec();};
-  rec.onend=()=>{if(isRec){try{rec.start();}catch(e){}}};
+  rec.onerror=e=>{
+    if(e.error==='aborted')return;
+    setStat('Lỗi mic: '+e.error,false);
+    isRec=false;
+    document.getElementById('rBtn').classList.remove('rec');
+    setStat('Bấm để bắt đầu nói',false);
+  };
+  rec.onend=()=>{
+    if(isRec){
+      setTimeout(()=>{
+        try{rec.start();}catch(e){console.log('restart err:',e);}
+      },100);
+    }
+  };
 }
 document.getElementById('rBtn').onclick=()=>{
   if(!rec){toast('Dùng Chrome hoặc Edge','err');return;}
   isRec?stopRec():startRec();
 };
-function startRec(){full=document.getElementById('tRaw').value;isRec=true;rec.start();document.getElementById('rBtn').classList.add('rec');setStat('Đang nghe...',true);}
-function stopRec(){isRec=false;rec.stop();document.getElementById('rBtn').classList.remove('rec');setStat('Bấm để bắt đầu nói',false);}
+function startRec(){
+  full=document.getElementById('tRaw').value;
+  isRec=true;
+  try{rec.start();}catch(e){console.log(e);}
+  document.getElementById('rBtn').classList.add('rec');
+  setStat('Đang nghe...',true);
+}
+function stopRec(){
+  isRec=false;
+  try{rec.stop();}catch(e){}
+  document.getElementById('rBtn').classList.remove('rec');
+  setStat('Bấm để bắt đầu nói',false);
+}
 function setStat(m,a){const e=document.getElementById('rStat');e.textContent=m;e.className='rstat'+(a?' act':'');}
 
 // ---- PROCESS ----
