@@ -227,12 +227,13 @@ async function saveDrive(){
 
 // ---- SPEECH ----
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-let rec=null,isRec=false,full='';
+let rec=null,isRec=false,full='',isStarting=false;
 if(SR){
   rec=new SR();
   rec.lang='vi-VN';
   rec.continuous=false;
   rec.interimResults=false;
+  rec.onstart=()=>{isStarting=false;};
   rec.onresult=e=>{
     for(let i=0;i<e.results.length;i++){
       if(e.results[i].isFinal){
@@ -249,10 +250,14 @@ if(SR){
     setStat('Bấm để bắt đầu nói',false);
   };
   rec.onend=()=>{
+    isStarting=false;
     if(isRec){
       setTimeout(()=>{
-        try{rec.start();}catch(e){console.log('restart err:',e);}
-      },100);
+        if(isRec&&!isStarting){
+          isStarting=true;
+          try{rec.start();}catch(e){isStarting=false;}
+        }
+      },200);
     }
   };
 }
@@ -261,14 +266,17 @@ document.getElementById('rBtn').onclick=()=>{
   isRec?stopRec():startRec();
 };
 function startRec(){
+  if(isStarting)return;
   full=document.getElementById('tRaw').value;
   isRec=true;
-  try{rec.start();}catch(e){console.log(e);}
+  isStarting=true;
+  try{rec.start();}catch(e){isStarting=false;console.log(e);}
   document.getElementById('rBtn').classList.add('rec');
   setStat('Đang nghe...',true);
 }
 function stopRec(){
   isRec=false;
+  isStarting=false;
   try{rec.stop();}catch(e){}
   document.getElementById('rBtn').classList.remove('rec');
   setStat('Bấm để bắt đầu nói',false);
