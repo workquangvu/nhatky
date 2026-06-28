@@ -171,9 +171,12 @@ function newSR() {
   };
   r.onend = () => {
     if (isRec) {
-      // tạo instance mới để tránh "already started"
-      sr = newSR();
-      if (sr) sr.start();
+      setTimeout(() => {
+        if (isRec) {
+          sr = newSR();
+          if (sr) sr.start();
+        }
+      }, 300);
     }
   };
   return r;
