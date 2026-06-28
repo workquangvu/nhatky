@@ -4,268 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nhật Ký — @quangvu.ta</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&family=Playfair+Display:ital@0;1&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink:       #1a1a1a;
-    --paper:     #f5f2ec;
-    --paper-2:   #edeae2;
-    --accent:    #b85c2c;
-    --muted:     #8a8278;
-    --border:    #d4cfc6;
-    --recording: #c0392b;
-    --success:   #2e7d52;
-    --radius:    8px;
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --ink:#1a1a1a;--paper:#f5f2ec;--paper2:#edeae2;
+    --accent:#b85c2c;--muted:#8a8278;--border:#d4cfc6;
+    --rec:#c0392b;--ok:#2e7d52;--r:8px;
   }
-
-  body {
-    font-family: 'Be Vietnam Pro', sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    padding: 18px 32px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .header-left { display: flex; align-items: baseline; gap: 12px; }
-
-  .logo {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 22px;
-    color: var(--accent);
-  }
-
-  .date-display { font-size: 13px; color: var(--muted); font-weight: 300; }
-
-  /* DRIVE STATUS */
-  .drive-status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .drive-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--border);
-    transition: background 0.3s;
-  }
-
-  .drive-dot.connected { background: var(--success); }
-  .drive-dot.connecting { background: #f39c12; animation: blink 1s infinite; }
-
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  #connectBtn {
-    padding: 6px 14px;
-    border-radius: 6px;
-    border: 1.5px solid var(--border);
-    background: white;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    color: var(--ink);
-    transition: all 0.15s;
-  }
-
-  #connectBtn:hover { border-color: var(--accent); color: var(--accent); }
-  #connectBtn.connected { border-color: var(--success); color: var(--success); }
-
-  main {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    max-width: 1100px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 32px;
-  }
-
-  .panel { display: flex; flex-direction: column; gap: 16px; }
-
-  .panel-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .record-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 36px 24px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    background: white;
-  }
-
-  #recordBtn {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    border: none;
-    background: var(--ink);
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-  }
-
-  #recordBtn:hover { background: var(--accent); transform: scale(1.04); }
-  #recordBtn.recording { background: var(--recording); animation: pulse 1.4s ease-in-out infinite; }
-
-  @keyframes pulse {
-    0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.3); }
-    50% { box-shadow: 0 0 0 12px rgba(192,57,43,0); }
-  }
-
-  .record-status { font-size: 13px; color: var(--muted); text-align: center; min-height: 20px; }
-  .record-status.active { color: var(--recording); font-weight: 500; }
-
-  textarea {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    background: white;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 14px;
-    line-height: 1.75;
-    color: var(--ink);
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  textarea:focus { border-color: var(--accent); }
-  textarea::placeholder { color: #ccc; }
-
-  #transcriptRaw { min-height: 160px; }
-  #editor { min-height: 340px; flex: 1; }
-
-  .btn-row { display: flex; gap: 10px; }
-
-  .btn {
-    padding: 10px 20px;
-    border-radius: var(--radius);
-    border: none;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .btn-primary { background: var(--ink); color: white; flex: 1; }
-  .btn-primary:hover { background: var(--accent); }
-  .btn-primary:disabled { background: var(--border); cursor: not-allowed; }
-
-  .btn-secondary {
-    background: white;
-    color: var(--ink);
-    border: 1.5px solid var(--border);
-  }
-  .btn-secondary:hover { border-color: var(--ink); }
-
-  .btn-drive {
-    background: white;
-    color: var(--success);
-    border: 1.5px solid var(--success);
-    flex: 1;
-  }
-  .btn-drive:hover { background: var(--success); color: white; }
-  .btn-drive:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
-  .tag {
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: white;
-    font-size: 12px;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: 'Be Vietnam Pro', sans-serif;
-  }
-  .tag:hover { border-color: var(--accent); color: var(--accent); }
-
-  .meta-row { display: flex; justify-content: space-between; align-items: center; }
-  .word-count { font-size: 11px; color: var(--muted); }
-
-  .folder-info {
-    font-size: 11px;
-    color: var(--muted);
-    padding: 8px 12px;
-    background: var(--paper-2);
-    border-radius: 6px;
-    display: none;
-  }
-  .folder-info.show { display: block; }
-
-  #toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--ink);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: transform 0.3s ease;
-    z-index: 999;
-    white-space: nowrap;
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-  #toast.success { background: var(--success); }
-  #toast.error { background: var(--recording); }
+  body{font-family:'Be Vietnam Pro',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+  header{padding:18px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .hl{display:flex;align-items:baseline;gap:12px}
+  .logo{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;color:var(--accent)}
+  .date{font-size:13px;color:var(--muted);font-weight:300}
+  .ds{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s}
+  .dot.on{background:var(--ok)}.dot.wait{background:#f39c12;animation:blink 1s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  #cBtn{padding:6px 14px;border-radius:6px;border:1.5px solid var(--border);background:white;font-family:'Be Vietnam Pro',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--ink);transition:all .15s}
+  #cBtn:hover{border-color:var(--accent);color:var(--accent)}
+  #cBtn.on{border-color:var(--ok);color:var(--ok)}
+  main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:1100px;width:100%;margin:0 auto;padding:32px}
+  .panel{display:flex;flex-direction:column;gap:16px}
+  .lbl{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  .rec-area{display:flex;flex-direction:column;align-items:center;gap:20px;padding:36px 24px;border:1.5px solid var(--border);border-radius:var(--r);background:white}
+  #rBtn{width:72px;height:72px;border-radius:50%;border:none;background:var(--ink);color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  #rBtn:hover{background:var(--accent);transform:scale(1.04)}
+  #rBtn.rec{background:var(--rec);animation:pulse 1.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.3)}50%{box-shadow:0 0 0 12px rgba(192,57,43,0)}}
+  .rstat{font-size:13px;color:var(--muted);text-align:center;min-height:20px}
+  .rstat.act{color:var(--rec);font-weight:500}
+  textarea{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--r);background:white;font-family:'Be Vietnam Pro',sans-serif;font-size:14px;line-height:1.75;color:var(--ink);resize:vertical;outline:none;transition:border-color .2s}
+  textarea:focus{border-color:var(--accent)}
+  textarea::placeholder{color:#ccc}
+  #tRaw{min-height:160px}
+  #editor{min-height:340px;flex:1}
+  .br{display:flex;gap:10px}
+  .btn{padding:10px 20px;border-radius:var(--r);border:none;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+  .bp{background:var(--ink);color:white;flex:1}.bp:hover{background:var(--accent)}.bp:disabled{background:var(--border);cursor:not-allowed}
+  .bs{background:white;color:var(--ink);border:1.5px solid var(--border)}.bs:hover{border-color:var(--ink)}
+  .bd{background:white;color:var(--ok);border:1.5px solid var(--ok);flex:1}.bd:hover{background:var(--ok);color:white}.bd:disabled{opacity:.4;cursor:not-allowed}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:white;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s;font-family:'Be Vietnam Pro',sans-serif}
+  .tag:hover{border-color:var(--accent);color:var(--accent)}
+  .mr{display:flex;justify-content:space-between;align-items:center}
+  .wc{font-size:11px;color:var(--muted)}
+  .fi{font-size:11px;color:var(--muted);padding:8px 12px;background:var(--paper2);border-radius:6px;display:none}
+  .fi.show{display:block}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:white;padding:12px 24px;border-radius:6px;font-size:13px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+  #toast.ok{background:var(--ok)}
+  #toast.err{background:var(--rec)}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="header-left">
+  <div class="hl">
     <div class="logo">Nhật Ký</div>
-    <div class="date-display" id="dateDisplay"></div>
+    <div class="date" id="dDisp"></div>
   </div>
-  <div class="drive-status">
-    <div class="drive-dot" id="driveDot"></div>
-    <span id="driveStatusText">Chưa kết nối Drive</span>
-    <button id="connectBtn" onclick="handleAuth()">Kết nối Google Drive</button>
+  <div class="ds">
+    <div class="dot" id="dot"></div>
+    <span id="dStat">Chưa kết nối Drive</span>
+    <button id="cBtn" onclick="handleAuth()">Kết nối Google Drive</button>
   </div>
 </header>
-
 <main>
-  <!-- LEFT: GHI ÂM -->
   <div class="panel">
-    <div class="panel-label">Ghi âm</div>
-
-    <div class="record-area">
-      <button id="recordBtn" title="Bắt đầu ghi âm">
+    <div class="lbl">Ghi âm</div>
+    <div class="rec-area">
+      <button id="rBtn">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
           <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
@@ -273,367 +81,219 @@
           <line x1="8" y1="23" x2="16" y2="23"/>
         </svg>
       </button>
-      <div class="record-status" id="recordStatus">Bấm để bắt đầu nói</div>
+      <div class="rstat" id="rStat">Bấm để bắt đầu nói</div>
     </div>
-
-    <div class="panel-label">Transcript thô</div>
-    <textarea id="transcriptRaw" placeholder="Transcript hiện ở đây khi mày nói..."></textarea>
-
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="processText()">Xử lý →</button>
-      <button class="btn btn-secondary" onclick="clearRaw()">Xóa</button>
+    <div class="lbl">Transcript thô</div>
+    <textarea id="tRaw" placeholder="Transcript hiện ở đây khi mày nói..."></textarea>
+    <div class="br">
+      <button class="btn bp" onclick="processText()">Xử lý →</button>
+      <button class="btn bs" onclick="clearRaw()">Xóa</button>
     </div>
   </div>
-
-  <!-- RIGHT: NHẬT KÝ -->
   <div class="panel">
-    <div class="meta-row">
-      <div class="panel-label">Nhật ký hôm nay</div>
-      <div class="word-count" id="wordCount">0 từ</div>
+    <div class="mr">
+      <div class="lbl">Nhật ký hôm nay</div>
+      <div class="wc" id="wc">0 từ</div>
     </div>
-
-    <textarea id="editor" placeholder="Nội dung nhật ký..."></textarea>
-
-    <div class="tag-row">
-      <span class="tag" onclick="insertSection('## Hôm nay')">+ Hôm nay</span>
-      <span class="tag" onclick="insertSection('## Insight thô')">+ Insight</span>
-      <span class="tag" onclick="insertSection('## Content?')">+ Content?</span>
+    <textarea id="editor"></textarea>
+    <div class="tags">
+      <span class="tag" onclick="ins('## Hôm nay')">+ Hôm nay</span>
+      <span class="tag" onclick="ins('## Insight thô')">+ Insight</span>
+      <span class="tag" onclick="ins('## Content?')">+ Content?</span>
     </div>
-
-    <div class="folder-info" id="folderInfo"></div>
-
-    <div class="btn-row">
-      <button class="btn btn-drive" id="savedriveBtn" onclick="saveToDrive()" disabled>☁ Lưu lên Drive</button>
-      <button class="btn btn-secondary" onclick="saveLocal()">💾 Lưu local</button>
-      <button class="btn btn-secondary" onclick="clearEditor()">Xóa</button>
+    <div class="fi" id="fi"></div>
+    <div class="br">
+      <button class="btn bd" id="dBtn" onclick="saveDrive()" disabled>☁ Lưu lên Drive</button>
+      <button class="btn bs" onclick="saveLocal()">💾 Local</button>
+      <button class="btn bs" onclick="clrEditor()">Xóa</button>
     </div>
   </div>
 </main>
-
 <div id="toast"></div>
 
 <script>
-// ================================================
-// CONFIG
-// ================================================
-const CLIENT_ID = '203565118158-5qbdht79qpk0ktvtrjqgg4psolsoufle.apps.googleusercontent.com';
-const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-const FOLDER_PATH = ['QUANGVU_WORKSPACE', '05_BRAIN', 'NhatKy'];
+const CLIENT_ID='203565118158-5qbdht79qpk0ktvtrjqgg4psolsoufle.apps.googleusercontent.com';
+const SCOPES='https://www.googleapis.com/auth/drive.file';
 
-// ================================================
-// DATE
-// ================================================
-const now = new Date();
-const pad = n => String(n).padStart(2, '0');
-const dateStr = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
-const monthFolder = `${pad(now.getMonth()+1)}_Thang${now.getMonth()+1}`;
-const yearFolder = `${now.getFullYear()}`;
+const now=new Date();
+const pad=n=>String(n).padStart(2,'0');
+const ds=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+const mf=`${pad(now.getMonth()+1)}_Thang${now.getMonth()+1}`;
+const yf=`${now.getFullYear()}`;
 
-document.getElementById('dateDisplay').textContent =
-  now.toLocaleDateString('vi-VN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+document.getElementById('dDisp').textContent=now.toLocaleDateString('vi-VN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-// Init editor
-const editor = document.getElementById('editor');
-editor.value = `# Nhật ký — ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}\n\n## Hôm nay làm gì / gặp ai / thấy gì đáng chú ý\n...\n\n## Insight thô\n...\n\n## Có thể thành content không?\n[ ] Có → move sang Ideas/\n[ ] Chưa biết → để đây\n[ ] Không\n`;
-updateWordCount();
+const ed=document.getElementById('editor');
+ed.value=`# Nhật ký — ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}\n\n## Hôm nay làm gì / gặp ai / thấy gì đáng chú ý\n...\n\n## Insight thô\n...\n\n## Có thể thành content không?\n[ ] Có → move sang Ideas/\n[ ] Chưa biết → để đây\n[ ] Không\n`;
+updWC();
 
-// ================================================
-// GOOGLE AUTH
-// ================================================
-let accessToken = null;
-let tokenClient = null;
+// ---- AUTH ----
+let token=null;
+let tokenClient=null;
+let gsiReady=false;
 
-window.onload = () => {
-  google.accounts.id.initialize({ client_id: CLIENT_ID });
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPES,
-    callback: (resp) => {
-      if (resp.error) { showToast('Lỗi đăng nhập: ' + resp.error, 'error'); return; }
-      accessToken = resp.access_token;
-      setDriveStatus('connected');
-    }
-  });
-};
-
-function handleAuth() {
-  if (accessToken) {
-    accessToken = null;
-    setDriveStatus('disconnected');
+function initGSI(){
+  if(typeof google==='undefined'||!google.accounts){
+    setTimeout(initGSI,200);
     return;
   }
-  setDriveStatus('connecting');
-  tokenClient.requestAccessToken({ prompt: 'consent' });
+  gsiReady=true;
+  tokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:CLIENT_ID,
+    scope:SCOPES,
+    callback:(r)=>{
+      if(r.error){toast('Lỗi: '+r.error,'err');setDS('off');return;}
+      token=r.access_token;
+      setDS('on');
+    }
+  });
 }
 
-function setDriveStatus(status) {
-  const dot = document.getElementById('driveDot');
-  const text = document.getElementById('driveStatusText');
-  const btn = document.getElementById('connectBtn');
-  const saveBtn = document.getElementById('savedriveBtn');
+function handleAuth(){
+  if(token){token=null;setDS('off');return;}
+  if(!gsiReady){toast('Đang tải Google API...','');setTimeout(handleAuth,500);return;}
+  setDS('wait');
+  tokenClient.requestAccessToken({prompt:'consent'});
+}
 
-  if (status === 'connected') {
-    dot.className = 'drive-dot connected';
-    text.textContent = 'Drive đã kết nối';
-    btn.textContent = 'Ngắt kết nối';
-    btn.className = 'connected';
-    saveBtn.disabled = false;
-    showToast('✓ Đã kết nối Google Drive', 'success');
-  } else if (status === 'connecting') {
-    dot.className = 'drive-dot connecting';
-    text.textContent = 'Đang kết nối...';
-  } else {
-    dot.className = 'drive-dot';
-    text.textContent = 'Chưa kết nối Drive';
-    btn.textContent = 'Kết nối Google Drive';
-    btn.className = '';
-    saveBtn.disabled = true;
+function setDS(s){
+  const dot=document.getElementById('dot');
+  const st=document.getElementById('dStat');
+  const cb=document.getElementById('cBtn');
+  const db=document.getElementById('dBtn');
+  if(s==='on'){
+    dot.className='dot on';st.textContent='Drive đã kết nối';
+    cb.textContent='Ngắt kết nối';cb.className='on';
+    db.disabled=false;toast('✓ Đã kết nối Google Drive','ok');
+  }else if(s==='wait'){
+    dot.className='dot wait';st.textContent='Đang kết nối...';
+  }else{
+    dot.className='dot';st.textContent='Chưa kết nối Drive';
+    cb.textContent='Kết nối Google Drive';cb.className='';
+    db.disabled=true;
   }
 }
 
-// ================================================
-// DRIVE API — tìm hoặc tạo folder
-// ================================================
-async function getOrCreateFolder(name, parentId = 'root') {
-  const query = `name='${name}' and mimeType='application/vnd.google-apps.folder' and '${parentId}' in parents and trashed=false`;
-  const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name)`, {
-    headers: { Authorization: `Bearer ${accessToken}` }
+// ---- DRIVE ----
+async function gf(name,pid='root'){
+  const q=`name='${name}' and mimeType='application/vnd.google-apps.folder' and '${pid}' in parents and trashed=false`;
+  const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id)`,
+    {headers:{Authorization:`Bearer ${token}`}});
+  const d=await r.json();
+  if(d.files&&d.files.length>0)return d.files[0].id;
+  const c=await fetch('https://www.googleapis.com/drive/v3/files',{
+    method:'POST',
+    headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
+    body:JSON.stringify({name,mimeType:'application/vnd.google-apps.folder',parents:[pid]})
   });
-  const data = await res.json();
-  if (data.files && data.files.length > 0) return data.files[0].id;
-
-  // Tạo mới
-  const create = await fetch('https://www.googleapis.com/drive/v3/files', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder', parents: [parentId] })
-  });
-  const folder = await create.json();
-  return folder.id;
+  return (await c.json()).id;
 }
 
-async function saveToDrive() {
-  if (!accessToken) { showToast('Kết nối Drive trước', 'error'); return; }
-  const content = editor.value.trim();
-  if (!content) { showToast('Chưa có nội dung', 'error'); return; }
-
-  showToast('Đang lưu lên Drive...');
-
-  try {
-    // Tìm/tạo folder path: QUANGVU_WORKSPACE/05_BRAIN/NhatKy/2026/06_Thang6
-    let folderId = 'root';
-    for (const name of FOLDER_PATH) {
-      folderId = await getOrCreateFolder(name, folderId);
+async function saveDrive(){
+  if(!token){toast('Kết nối Drive trước','err');return;}
+  const content=ed.value.trim();
+  if(!content){toast('Chưa có nội dung','err');return;}
+  toast('Đang lưu...');
+  try{
+    let fid='root';
+    for(const n of['QUANGVU_WORKSPACE','05_BRAIN','NhatKy'])fid=await gf(n,fid);
+    fid=await gf(yf,fid);
+    fid=await gf(mf,fid);
+    const fn=`${ds}_NhatKy.md`;
+    const q=`name='${fn}' and '${fid}' in parents and trashed=false`;
+    const ck=await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id)`,
+      {headers:{Authorization:`Bearer ${token}`}});
+    const cd=await ck.json();
+    let res;
+    if(cd.files&&cd.files.length>0){
+      res=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${cd.files[0].id}?uploadType=media`,{
+        method:'PATCH',headers:{Authorization:`Bearer ${token}`,'Content-Type':'text/markdown'},body:content});
+    }else{
+      const m=await fetch('https://www.googleapis.com/drive/v3/files',{
+        method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
+        body:JSON.stringify({name:fn,parents:[fid],mimeType:'text/markdown'})});
+      const md=await m.json();
+      res=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${md.id}?uploadType=media`,{
+        method:'PATCH',headers:{Authorization:`Bearer ${token}`,'Content-Type':'text/markdown'},body:content});
     }
-    folderId = await getOrCreateFolder(yearFolder, folderId);
-    folderId = await getOrCreateFolder(monthFolder, folderId);
-
-    const filename = `${dateStr}_NhatKy.md`;
-
-    // Check file đã tồn tại chưa
-    const query = `name='${filename}' and '${folderId}' in parents and trashed=false`;
-    const check = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id)`, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
-    const checkData = await check.json();
-
-    let response;
-    if (checkData.files && checkData.files.length > 0) {
-      // Update file cũ
-      const fileId = checkData.files[0].id;
-      response = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'text/markdown' },
-        body: content
-      });
-    } else {
-      // Tạo file mới (2 bước: metadata + content)
-      const meta = await fetch('https://www.googleapis.com/drive/v3/files', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: filename, parents: [folderId], mimeType: 'text/markdown' })
-      });
-      const metaData = await meta.json();
-      response = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${metaData.id}?uploadType=media`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'text/markdown' },
-        body: content
-      });
-    }
-
-    if (response.ok) {
-      const folderDisplayPath = `QUANGVU_WORKSPACE/05_BRAIN/NhatKy/${yearFolder}/${monthFolder}/`;
-      const info = document.getElementById('folderInfo');
-      info.textContent = `✓ Đã lưu: ${folderDisplayPath}${filename}`;
-      info.className = 'folder-info show';
-      showToast('✓ Đã lưu lên Drive', 'success');
-    } else {
-      showToast('Lỗi lưu file', 'error');
-    }
-  } catch (err) {
-    showToast('Lỗi: ' + err.message, 'error');
-  }
+    if(res.ok){
+      const fi=document.getElementById('fi');
+      fi.textContent=`✓ QUANGVU_WORKSPACE/05_BRAIN/NhatKy/${yf}/${mf}/${fn}`;
+      fi.className='fi show';
+      toast('✓ Đã lưu lên Drive','ok');
+    }else toast('Lỗi lưu file','err');
+  }catch(e){toast('Lỗi: '+e.message,'err');}
 }
 
-// ================================================
-// SPEECH RECOGNITION
-// ================================================
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = null;
-let isRecording = false;
-let fullTranscript = '';
-
-if (SpeechRecognition) {
-  recognition = new SpeechRecognition();
-  recognition.lang = 'vi-VN';
-  recognition.continuous = true;
-  recognition.interimResults = true;
-
-  recognition.onresult = (e) => {
-    let interim = '', final = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) final += t + ' ';
-      else interim += t;
+// ---- SPEECH ----
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null,isRec=false,full='';
+if(SR){
+  rec=new SR();rec.lang='vi-VN';rec.continuous=true;rec.interimResults=true;
+  rec.onresult=e=>{
+    let int='',fin='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal)fin+=t+' ';else int+=t;
     }
-    fullTranscript += final;
-    document.getElementById('transcriptRaw').value = fullTranscript + interim;
+    full+=fin;
+    document.getElementById('tRaw').value=full+int;
   };
-
-  recognition.onerror = (e) => { setStatus('Lỗi: ' + e.error, false); stopRecording(); };
-  recognition.onend = () => { if (isRecording) recognition.start(); };
+  rec.onerror=e=>{setStat('Lỗi: '+e.error,false);stopRec();};
+  rec.onend=()=>{if(isRec)rec.start();};
 }
-
-document.getElementById('recordBtn').onclick = () => {
-  if (!recognition) { showToast('Dùng Chrome hoặc Edge để ghi âm', 'error'); return; }
-  isRecording ? stopRecording() : startRecording();
+document.getElementById('rBtn').onclick=()=>{
+  if(!rec){toast('Dùng Chrome hoặc Edge','err');return;}
+  isRec?stopRec():startRec();
 };
+function startRec(){full=document.getElementById('tRaw').value;isRec=true;rec.start();document.getElementById('rBtn').classList.add('rec');setStat('Đang nghe...',true);}
+function stopRec(){isRec=false;rec.stop();document.getElementById('rBtn').classList.remove('rec');setStat('Bấm để bắt đầu nói',false);}
+function setStat(m,a){const e=document.getElementById('rStat');e.textContent=m;e.className='rstat'+(a?' act':'');}
 
-function startRecording() {
-  fullTranscript = document.getElementById('transcriptRaw').value;
-  isRecording = true;
-  recognition.start();
-  document.getElementById('recordBtn').classList.add('recording');
-  setStatus('Đang nghe...', true);
+// ---- PROCESS ----
+function processText(){
+  const raw=document.getElementById('tRaw').value.trim();
+  if(!raw){toast('Chưa có transcript','err');return;}
+  let t=raw;
+  [{r:/\b(ừ+|uh+|um+|eh+|ah+|à+|ờ+|ơ+|ừm+)\b/gi},{r:/\b(thì là|mà thì|tức là|kiểu như|kiểu là|nghĩa là|như là)\b/gi}]
+    .forEach(f=>{t=t.replace(f.r,'');});
+  t=t.replace(/\s{2,}/g,' ').trim();
+  const ss=t.split(/[.!?]\s+/),u=[];
+  ss.forEach(s=>{const c=s.trim().toLowerCase(),p=u.length>0?u[u.length-1].trim().toLowerCase():'';if(c&&c!==p&&c.length>3)u.push(s.trim());});
+  t=u.join('. ');if(t&&!t.match(/[.!?]$/))t+='.';
+  const mk='## Hôm nay làm gì / gặp ai / thấy gì đáng chú ý\n',idx=ed.value.indexOf(mk);
+  if(idx!==-1){const b=ed.value.substring(0,idx+mk.length),a=ed.value.substring(b.length).replace(/^\.\.\./,'');ed.value=b+t+'\n'+a;}
+  else ed.value+='\n\n'+t;
+  updWC();toast('Đã xử lý xong');
 }
 
-function stopRecording() {
-  isRecording = false;
-  recognition.stop();
-  document.getElementById('recordBtn').classList.remove('recording');
-  setStatus('Bấm để bắt đầu nói', false);
-}
-
-function setStatus(msg, active) {
-  const el = document.getElementById('recordStatus');
-  el.textContent = msg;
-  el.className = 'record-status' + (active ? ' active' : '');
-}
-
-// ================================================
-// PROCESS TEXT
-// ================================================
-function processText() {
-  const raw = document.getElementById('transcriptRaw').value.trim();
-  if (!raw) { showToast('Chưa có transcript', 'error'); return; }
-
-  let text = raw;
-  const fillers = [
-    /\b(ừ+|uh+|um+|eh+|ah+|à+|ờ+|ơ+|ừm+)\b/gi,
-    /\b(thì là|mà thì|tức là|kiểu như|kiểu là|nghĩa là|như là)\b/gi,
-  ];
-  fillers.forEach(f => { text = text.replace(f, ''); });
-  text = text.replace(/\s{2,}/g, ' ').trim();
-
-  const sentences = text.split(/[.!?]\s+/);
-  const unique = [];
-  sentences.forEach(s => {
-    const c = s.trim().toLowerCase();
-    const prev = unique.length > 0 ? unique[unique.length-1].trim().toLowerCase() : '';
-    if (c && c !== prev && c.length > 3) unique.push(s.trim());
-  });
-  text = unique.join('. ');
-  if (text && !text.match(/[.!?]$/)) text += '.';
-
-  const marker = '## Hôm nay làm gì / gặp ai / thấy gì đáng chú ý\n';
-  const idx = editor.value.indexOf(marker);
-  if (idx !== -1) {
-    const before = editor.value.substring(0, idx + marker.length);
-    const after = editor.value.substring(before.length).replace(/^\.\.\./, '');
-    editor.value = before + text + '\n' + after;
-  } else {
-    editor.value += '\n\n' + text;
-  }
-  updateWordCount();
-  showToast('Đã xử lý và đưa vào nhật ký');
-}
-
-// ================================================
-// EDITOR UTILS
-// ================================================
-editor.addEventListener('input', updateWordCount);
-
-function updateWordCount() {
-  const words = editor.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-  document.getElementById('wordCount').textContent = words + ' từ';
-}
-
-function insertSection(title) {
-  const pos = editor.selectionStart;
-  editor.value = editor.value.substring(0, pos) + '\n\n' + title + '\n...\n' + editor.value.substring(pos);
-  editor.focus();
-  updateWordCount();
-}
-
-function clearRaw() {
-  document.getElementById('transcriptRaw').value = '';
-  fullTranscript = '';
-}
-
-function clearEditor() {
-  if (confirm('Xóa toàn bộ nhật ký hôm nay?')) {
-    editor.value = `# Nhật ký — ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}\n\n## Hôm nay làm gì / gặp ai / thấy gì đáng chú ý\n...\n\n## Insight thô\n...\n\n## Có thể thành content không?\n[ ] Có → move sang Ideas/\n[ ] Chưa biết → để đây\n[ ] Không\n`;
-    updateWordCount();
-  }
-}
-
-async function saveLocal() {
-  const content = editor.value.trim();
-  if (!content) { showToast('Chưa có nội dung', 'error'); return; }
-  const filename = `${dateStr}_NhatKy.md`;
-  try {
-    if (window.showSaveFilePicker) {
-      const handle = await window.showSaveFilePicker({
-        suggestedName: filename,
-        types: [{ description: 'Markdown', accept: { 'text/markdown': ['.md'] } }]
-      });
-      const writable = await handle.createWritable();
-      await writable.write(content);
-      await writable.close();
-    } else {
-      const blob = new Blob([content], { type: 'text/markdown' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename; a.click();
-      URL.revokeObjectURL(url);
+// ---- UTILS ----
+ed.addEventListener('input',updWC);
+function updWC(){const w=ed.value.trim().split(/\s+/).filter(w=>w.length>0).length;document.getElementById('wc').textContent=w+' từ';}
+function ins(title){const p=ed.selectionStart;ed.value=ed.value.substring(0,p)+'\n\n'+title+'\n...\n'+ed.value.substring(p);ed.focus();updWC();}
+function clearRaw(){document.getElementById('tRaw').value='';full='';}
+function clrEditor(){if(confirm('Xóa toàn bộ nhật ký hôm nay?')){ed.value=`# Nhật ký — ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}\n\n## Hôm nay làm gì / gặp ai / thấy gì đáng chú ý\n...\n\n## Insight thô\n...\n\n## Có thể thành content không?\n[ ] Có → move sang Ideas/\n[ ] Chưa biết → để đây\n[ ] Không\n`;updWC();}}
+async function saveLocal(){
+  const content=ed.value.trim();if(!content){toast('Chưa có nội dung','err');return;}
+  const fn=`${ds}_NhatKy.md`;
+  try{
+    if(window.showSaveFilePicker){
+      const h=await window.showSaveFilePicker({suggestedName:fn,types:[{description:'Markdown',accept:{'text/markdown':['.md']}}]});
+      const w=await h.createWritable();await w.write(content);await w.close();
+    }else{
+      const b=new Blob([content],{type:'text/markdown'}),u=URL.createObjectURL(b),a=document.createElement('a');
+      a.href=u;a.download=fn;a.click();URL.revokeObjectURL(u);
     }
-    showToast('✓ Đã lưu ' + filename, 'success');
-  } catch (err) {
-    if (err.name !== 'AbortError') showToast('Lỗi: ' + err.message, 'error');
-  }
+    toast('✓ Đã lưu '+fn,'ok');
+  }catch(e){if(e.name!=='AbortError')toast('Lỗi: '+e.message,'err');}
 }
 
-// ================================================
-// TOAST
-// ================================================
-let toastTimer;
-function showToast(msg, type = '') {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { toast.className = ''; }, 3000);
-}
+let tt;
+function toast(m,t=''){const el=document.getElementById('toast');el.textContent=m;el.className='show '+(t==='ok'?'ok':t==='err'?'err':'');clearTimeout(tt);tt=setTimeout(()=>{el.className='';},3000);}
+
+// Init GSI sau khi DOM load
+window.addEventListener('load',()=>setTimeout(initGSI,100));
 </script>
+<script src="https://accounts.google.com/gsi/client" async></script>
 </body>
 </html>
