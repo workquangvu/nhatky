@@ -240,7 +240,7 @@ if(SR){
     document.getElementById('tRaw').value=full+int;
   };
   rec.onerror=e=>{setStat('Lỗi: '+e.error,false);stopRec();};
-  rec.onend=()=>{if(isRec)rec.start();};
+  rec.onend=()=>{if(isRec){try{rec.start();}catch(e){}}};
 }
 document.getElementById('rBtn').onclick=()=>{
   if(!rec){toast('Dùng Chrome hoặc Edge','err');return;}
